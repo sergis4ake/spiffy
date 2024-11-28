@@ -5,24 +5,23 @@ import ClickAwayListener from "react-click-away-listener";
 export default function Padding() {
   const [isVisible, setIsVisible] = useState(false);
   const [pVal, setPVal] = useState(1.5);
-  // Click away handle
-  const handleClickAway = () => {
-    setIsVisible(false);
-  };
-  //   Padding Persists on Session Switch
+
+  // Initialize padding from localStorage or use default
   useEffect(() => {
     const plocal = localStorage.getItem("betterscreensort_p");
-    // If padding value exists in local storage, we will set its value to pval
-    if (plocal) {
-      setPVal(plocal);
-      document.getElementById("my-node").style.padding = `${plocal}rem`;
-    }
+    const initialPadding = plocal ? parseFloat(plocal) : 0.5;
+    setPVal(initialPadding);
+    document.getElementById("my-node").style.padding = `${initialPadding}rem`;
   }, []);
 
-  function setPadding() {
-    localStorage.setItem("betterscreensort_p", pVal);
-    document.getElementById("my-node").style.padding = `${pVal}rem`;
-  }
+  // Update padding both in state and DOM
+  const updatePadding = (value) => {
+    const numericValue = parseFloat(value);
+    setPVal(numericValue);
+    localStorage.setItem("betterscreensort_p", numericValue);
+    document.getElementById("my-node").style.padding = `${numericValue}rem`;
+  };
+
   return (
     <>
       <div
@@ -38,12 +37,12 @@ export default function Padding() {
       </div>
       {isVisible && (
         <div className="menu-modal z-40 justify-center items-center fixed w-screen h-screen left-0 top-0 custom-bg-modal transition-color duration-300 ease-in-out">
-          <ClickAwayListener onClickAway={handleClickAway}>
+          <ClickAwayListener onClickAway={() => setIsVisible(false)}>
             <div
               id="mydiv"
               className="flex top-1/2 transform -translate-y-1/2 w-full z-20 fixed justify-center items-center"
             >
-              <ClickAwayListener onClickAway={handleClickAway}>
+              <ClickAwayListener onClickAway={() => setIsVisible(false)}>
                 <div className="modal-maximize transform transition-all ease-in-out duration-200 w-11/12 sm:w-10/12 md:w-8/12 lg:w-6/12 h-max rounded-xl bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-blue-200 m-2 fade-on-appear shadow-parent">
                   <div
                     id="mydivheader"
@@ -62,16 +61,16 @@ export default function Padding() {
                       onClick={() => setIsVisible(false)}
                     ></div>
                   </div>
-                  <div className=" transform text-base sm:text-lg md:text-xl p-4 py-8 max-h-96 w-full text-indigo-500 dark:text-indigo-300 transition-color duration-300 ease-in-out overflow-y-auto flex flex-wrap justify-center gap-4 items-center">
-                    {/* content */}
+                  <div className="transform text-base sm:text-lg md:text-xl p-4 py-8 max-h-96 w-full text-indigo-500 dark:text-indigo-300 transition-color duration-300 ease-in-out overflow-y-auto flex flex-wrap justify-center gap-4 items-center">
+                    {/* Padding adjustment slider */}
                     0rem
                     <input
                       type="range"
                       min={0}
                       max={5}
-                      onChange={(e) => setPVal(e.target.value) & setPadding()}
                       step={0.25}
                       value={pVal}
+                      onChange={(e) => updatePadding(e.target.value)}
                       className="w-6/12 accent-indigo-500 dark:accent-indigo-300 -mb-1.5"
                     />
                     5rem
